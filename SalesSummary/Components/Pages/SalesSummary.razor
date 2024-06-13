@@ -1,0 +1,135 @@
+﻿@page "/"
+@page "/sales-summary"
+@using global::SalesSummary.Models
+
+<h3>VM/O2 Sales Data</h3>
+
+@if (isLoading)
+{
+    <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="ms-3">Loading data, please wait...</div>
+    </div>
+}
+else
+{
+    <input @bind="searchTerm" @bind:event="oninput" placeholder="Search by Segment, Country or Product..." class="form-control mb-3" />
+
+    <button @onclick="ResetSearch" class="btn btn-secondary">Reset</button>
+
+
+    <table class="table table-warning">
+        <thead>
+            <tr>
+                <th class="sortable-column" @onclick="() => SortByColumn(nameof(SalesRecord.Segment))">
+                    Segment
+                    @if (sortColumn == nameof(SalesRecord.Segment))
+                    {
+                        <span class="sort-icon @(sortAscending ? "" : "down")"></span>
+                    }
+                </th>
+                <th class="sortable-column" @onclick="() => SortByColumn(nameof(SalesRecord.Country))">
+                    Country
+                    @if (sortColumn == nameof(SalesRecord.Country))
+                    {
+                        <span class="sort-icon @(sortAscending ? "" : "down")"></span>
+                    }
+                </th>
+                <th class="sortable-column" @onclick="() => SortByColumn(nameof(SalesRecord.Product))">
+                    Product
+                    @if (sortColumn == nameof(SalesRecord.Product))
+                    {
+                        <span class="sort-icon @(sortAscending ? "" : "down")"></span>
+                    }
+                </th>
+                <th class="sortable-column" @onclick="() => SortByColumn(nameof(SalesRecord.DiscountBand))">
+                    Discount Band
+                    @if (sortColumn == nameof(SalesRecord.DiscountBand))
+                    {
+                        <span class="sort-icon @(sortAscending ? "" : "down")"></span>
+                    }
+                </th>
+                <th class="sortable-column" @onclick="() => SortByColumn(nameof(SalesRecord.UnitsSold))">
+                    Units Sold
+                    @if (sortColumn == nameof(SalesRecord.UnitsSold))
+                    {
+                        <span class="sort-icon @(sortAscending ? "" : "down")"></span>
+                    }
+                </th>
+                <th class="sortable-column" @onclick="() => SortByColumn(nameof(SalesRecord.ManufacturingPrice))">
+                    Manufacturing Price
+                    @if (sortColumn == nameof(SalesRecord.ManufacturingPrice))
+                    {
+                        <span class="sort-icon @(sortAscending ? "" : "down")"></span>
+                    }
+                </th>
+                <th class="sortable-column" @onclick="() => SortByColumn(nameof(SalesRecord.SalePrice))">
+                    Sale Price
+                    @if (sortColumn == nameof(SalesRecord.SalePrice))
+                    {
+                        <span class="sort-icon @(sortAscending ? "" : "down")"></span>
+                    }
+                </th>
+                <th class="sortable-column" @onclick="() => SortByColumn(nameof(SalesRecord.Date))">
+                    Date
+                    @if (sortColumn == nameof(SalesRecord.Date))
+                    {
+                        <span class="sort-icon @(sortAscending ? "" : "down")"></span>
+                    }
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var record in PagedRecords)
+            {
+                <tr>
+                    <td>@record.Segment</td>
+                    <td>@record.Country</td>
+                    <td>@record.Product</td>
+                    <td>@record.DiscountBand</td>
+                    <td>@record.UnitsSold</td>
+                    <td>@record.ManufacturingPrice</td>
+                    <td>@record.SalePrice</td>
+                    <td>@record.Date.ToShortDateString()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div>
+        <label>Rows per page:</label>
+        <select @onchange="RowsPerPageChanged" class="form-select">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="40">40</option>
+            <option value="50">50</option>
+        </select>
+    </div>
+
+    <div>
+        <button @onclick="FirstPage" class="btn btn-warning" disabled="@(!HasPreviousPage)">First</button>
+        <button @onclick="PreviousPage" class="btn btn-warning" disabled="@(!HasPreviousPage)">Previous</button>
+        <span>Page @currentPage of @totalPages</span>
+        <button @onclick="NextPage" class="btn btn-warning" disabled="@(!HasNextPage)">Next</button>
+        <button @onclick="LastPage" class="btn btn-warning" disabled="@(!HasNextPage)">Last</button>
+    </div>
+    <hr />
+    <h4>Summaries</h4>
+    <div class="row">
+        <div class="col-md-6">
+            <SegmentSummary />
+        </div>
+        <div class="col-md-6">
+            <CountrySummary />
+        </div>
+        <div class="col-md-6">
+            <ProductSummary />
+        </div>
+        <div class="col-md-6">
+            <DiscountSummary />
+        </div>
+    </div>
+}
